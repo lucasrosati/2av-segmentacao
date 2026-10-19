@@ -1,0 +1,35 @@
+# segredos
+kaggle.json
+.kaggle/
+*.env
+.env
+# dados (Kvasir-SEG não é redistribuível via git)
+data/
+kaggle_data/
+# artefatos pesados de runs
+results/runs/**/*.pt
+results/runs/**/*.pth
+results/runs/**/checkpoints/
+checkpoints/
+results_kaggle/
+mlruns/
+*.ckpt
+# python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+# latex
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.bbl
+paper/*.blg
+# instruções locais de agente (nunca vão para o GitHub)
+CLAUDE.md
+CLAUDE.local.md
+.claude/
+docs/plano-2av.md
+.DS_Store

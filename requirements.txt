@@ -1,0 +1,3 @@
+# Só para o Kaggle: o resto já vem na imagem nas versões fixadas em pyproject.toml.
+# Não reinstale torch/torchvision lá. Confira com: python -m seg2av.env
+segmentation-models-pytorch==0.5.0

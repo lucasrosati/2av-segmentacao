@@ -1,0 +1,29 @@
+# Cenário: U-Net + Transfer Learning (ImageNet) + encoder resnet34
+# TODO(M2): validar hiperparâmetros no piloto (M4). Mesmo orçamento nos dois cenários (exceto o encoder).
+scenario: cnn_resnet34
+model:
+  arch: Unet
+  encoder_name: resnet34
+  encoder_weights: imagenet
+  classes: 1
+data:
+  root: auto            # auto: /kaggle/input/kvasir-seg (Kaggle) ou data/raw/kvasir-seg (local)
+  split_file: splits/split_v1.json
+  split_sha256_file: splits/split_v1.sha256
+  image_size: 256
+  augment: [hflip, vflip, rotate90, color_jitter_light]
+train:
+  epochs: 50            # TODO: definir no piloto
+  batch_size: 16
+  optimizer: adamw
+  lr: 3.0e-4            # TODO: mesmo LR para ambos ou justificar diferença (registrar)
+  weight_decay: 1.0e-4
+  scheduler: cosine
+  loss: dice_bce
+  amp: true
+  early_stopping: {monitor: val_dice, patience: 10}
+seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29]
+vary: seed              # D2: seed (padrão) | splits (opcional, desligado)
+tracking:
+  out_dir: results/runs # D3: <scenario>_seed<n>/{config.json,metrics.json,history.csv,DONE}
+  mlflow: false         # opcional: file:./mlruns

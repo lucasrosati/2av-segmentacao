@@ -1,0 +1,51 @@
+[project]
+name = "seg2av"
+version = "0.1.0"
+description = "Estudo comparativo de segmentação: U-Net + TL, ResNet-34 vs MiT-B0 (Kvasir-SEG)"
+readme = "README.md"
+requires-python = "==3.13.*"
+# Versões da imagem GPU do Kaggle (lidas em 19/10/2026 no kernel seg2av-runner v1).
+# No Kaggle só falta instalar o smp; torch/torchvision vêm da imagem e não são reinstalados.
+dependencies = [
+    "torch==2.11.0",
+    "torchvision==0.26.0",
+    "segmentation-models-pytorch==0.5.0",
+    "timm==1.0.29",
+    "albumentations==2.0.8",
+    "opencv-python-headless==4.14.0.94",
+    "numpy==2.1.3",
+    "scipy==1.16.3",
+    "pandas==2.3.3",
+    "matplotlib==3.10.0",
+    "seaborn==0.13.2",
+    "pyyaml==6.0.3",
+    "tqdm==4.67.3",
+]
+
+[project.optional-dependencies]
+mlflow = ["mlflow==3.17.1"]  # opcional (D3)
+demo = ["gradio==6.30.0"]    # M8
+
+[dependency-groups]
+dev = ["pytest==9.1.1", "ruff==0.17.1", "kaggle==2.2.4"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/seg2av"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+extend-exclude = ["kaggle_data", "results_kaggle"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff.lint.per-file-ignores]
+"*.ipynb" = ["E402"]  # notebook instala deps antes de importar
