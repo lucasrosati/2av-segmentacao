@@ -68,10 +68,11 @@ def load_split(path: Path, sha_path: Path | None = None) -> dict[str, list[str]]
     return json.loads(path.read_text())
 
 
-def build_transform(image_size: int, augment=()) -> A.Compose:
+def build_transform(image_size: int, augment=(), seed: int | None = None) -> A.Compose:
     return A.Compose(
         [A.Resize(image_size, image_size), *(AUGMENTS[a]() for a in augment)]
-        + [A.Normalize(), ToTensorV2()]  # média/dp do ImageNet, iguais nos dois encoders
+        + [A.Normalize(), ToTensorV2()],  # média/dp do ImageNet, iguais nos dois encoders
+        seed=seed,
     )
 
 
@@ -83,9 +84,9 @@ def read_pair(root: Path, name: str) -> tuple[np.ndarray, np.ndarray]:
 
 
 class KvasirSeg(Dataset):
-    def __init__(self, root: Path, names: list[str], image_size: int = 256, augment=()):
+    def __init__(self, root: Path, names: list[str], image_size: int = 256, augment=(), seed=None):
         self.root, self.names = Path(root), names
-        self.transform = build_transform(image_size, augment)
+        self.transform = build_transform(image_size, augment, seed)
 
     def __len__(self) -> int:
         return len(self.names)

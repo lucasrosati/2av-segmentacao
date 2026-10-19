@@ -15,6 +15,7 @@ data:
 train:
   epochs: 50            # TODO: definir no piloto
   batch_size: 16
+  num_workers: 4        # Kaggle tem 4 vCPUs; entra na semente da augmentation, manter fixo
   optimizer: adamw
   lr: 3.0e-4            # TODO: mesmo LR para ambos ou justificar diferença (registrar)
   weight_decay: 1.0e-4

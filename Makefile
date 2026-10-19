@@ -5,7 +5,7 @@ CONFIG_cnn := configs/cnn_resnet34.yaml
 CONFIG_transformer := configs/transformer_mitb0.yaml
 KERNEL_DIR := kaggle
 
-.PHONY: setup env test lint data splits samples sweep pilot collect analyze stats figures slides-assets demo paper kaggle-push kaggle-status kaggle-output
+.PHONY: setup env test lint data splits samples overfit sweep pilot collect analyze stats figures slides-assets demo paper kaggle-push kaggle-status kaggle-output
 
 setup:          ## instala dependências
 	uv sync
@@ -21,6 +21,8 @@ splits:         ## M1/D2: gera splits/split_v1.json + .sha256 (determinístico)
 	$(PY) scripts/make_splits.py --seed 0 --out splits/split_v1.json
 samples:        ## M1: results/figures/samples.png
 	$(PY) -m seg2av.plots --target samples
+overfit:        ## M2: sanidade, 8 imagens até Dice > 0,9
+	$(PY) scripts/overfit.py --config $(CONFIG_$(SCENARIO))
 pilot:          ## M4: 5 seeds por cenário
 	$(PY) scripts/run_sweep.py --config $(CONFIG_$(SCENARIO)) --seeds 0-4 --resume
 sweep:          ## M5: 30 seeds (retomável)
