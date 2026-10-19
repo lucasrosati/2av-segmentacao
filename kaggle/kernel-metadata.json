@@ -11,5 +11,6 @@
     "lucasrosati/kvasir-seg"
   ],
   "competition_sources": [],
-  "kernel_sources": []
+  "kernel_sources": [],
+  "docker_image_pinning_type": "original"
 }

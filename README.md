@@ -11,7 +11,7 @@
 ## Ambiente
 - Python 3.13 e libs fixadas em `pyproject.toml` nas mesmas versões da imagem GPU do Kaggle (resultados locais e do Kaggle saem das mesmas libs).
 - Local: `uv sync` (cria `.venv`). `make env` confere se o instalado bate com os pins.
-- Kaggle: torch/torchvision vêm da imagem; instale só `requirements.txt` (smp) e rode `python -m seg2av.env`.
+- Kaggle: o kernel fica travado na imagem da v1 (`docker_image_pinning_type: original`, digest `sha256:2757e0c7d1e0a9cb43da657b97e223c321a98f5014bdf64f44f2f6b083ad2b2f`). torch/torchvision vêm da imagem; instale só `requirements.txt` (smp) e rode `python -m seg2av.env`.
 
 ## Uso
 ```bash
