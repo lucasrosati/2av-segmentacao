@@ -20,6 +20,7 @@ def test_uma_epoca_em_16_imagens_grava_run_completa(config, tmp_path, monkeypatc
     assert "last.pt" not in files and "best.pt" in files
     metrics = json.loads((run_dir / "metrics.json").read_text())
     assert metrics["n_test"] == 16 and 0 <= metrics["test_dice"] <= 1
+    assert metrics["latency_ms"] > 0 and metrics["n_params"] > metrics["n_params_encoder"]
     assert run(cfg, seed=0, out_dir=tmp_path, limit=16) == "done"  # idempotente
 
 

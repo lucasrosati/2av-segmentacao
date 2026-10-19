@@ -18,7 +18,7 @@ from torch.utils.data import DataLoader, get_worker_info
 
 from seg2av.data import KvasirSeg, load_split, resolve_root
 from seg2av.env import installed_version, pins
-from seg2av.evaluate import evaluate
+from seg2av.evaluate import evaluate, latency_ms
 from seg2av.losses import DiceBCELoss
 from seg2av.models import build_model, n_params
 
@@ -98,12 +98,16 @@ def _git_commit() -> str:
         return "unknown"
 
 
+def device_name(device: torch.device) -> str:
+    return torch.cuda.get_device_name() if device.type == "cuda" else device.type
+
+
 def environment(device: torch.device) -> dict:
     return {
         "git_commit": _git_commit(),
         "python": platform.python_version(),
         "libs": {name: installed_version(name) for name in pins()},
-        "device": torch.cuda.get_device_name() if device.type == "cuda" else device.type,
+        "device": device_name(device),
     }
 
 
@@ -233,6 +237,8 @@ def run(
         "epoch_time_s": state["train_s"] / state["epoch"],
         "n_params": n_params(model),
         "n_params_encoder": n_params(model.encoder),
+        "latency_ms": latency_ms(model, device, cfg["data"]["image_size"], amp),
+        "latency_device": device_name(device),
         "split_sha256": hashlib.sha256(split_file.read_bytes()).hexdigest(),
         "limit": limit,
     }
