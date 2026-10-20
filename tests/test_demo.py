@@ -1,10 +1,10 @@
 import numpy as np
 from PIL import Image
+from test_plots import MODEL, NAMES, _fake_checkpoint, _fake_dataset, _fake_results
 
 from seg2av.demo import demo_gif, load_models, overlay, segment
 from seg2av.plots import median_seed
 from seg2av.stats import ALT, BASE
-from test_plots import MODEL, NAMES, _fake_checkpoint, _fake_dataset, _fake_results
 
 
 def test_overlay_only_touches_mask():
