@@ -1,0 +1,19 @@
+{
+  "scenario": "transformer_mitb0",
+  "seed": 19,
+  "test_dice": 0.9119436144828796,
+  "test_iou": 0.854095995426178,
+  "n_test": 100,
+  "best_val_dice": 0.9012998938560486,
+  "best_epoch": 40,
+  "epochs_run": 50,
+  "early_stopped": true,
+  "train_time_s": 372.7300126552582,
+  "epoch_time_s": 7.454600253105164,
+  "n_params": 5549489,
+  "n_params_encoder": 3319392,
+  "latency_ms": 16.449201999421348,
+  "latency_device": "Tesla T4",
+  "split_sha256": "73d69aec0145fdf596eddea6648188b0cf36a17e6410c16c98181ab6a8f418a9",
+  "limit": null
+}

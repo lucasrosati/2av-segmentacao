@@ -1,0 +1,19 @@
+{
+  "scenario": "cnn_resnet34",
+  "seed": 3,
+  "test_dice": 0.879997968673706,
+  "test_iou": 0.8078802227973938,
+  "n_test": 100,
+  "best_val_dice": 0.8794568777084351,
+  "best_epoch": 7,
+  "epochs_run": 17,
+  "early_stopped": true,
+  "train_time_s": 124.62945246696472,
+  "epoch_time_s": 7.33114426276263,
+  "n_params": 24436369,
+  "n_params_encoder": 21284672,
+  "latency_ms": 9.608880999962821,
+  "latency_device": "Tesla T4",
+  "split_sha256": "73d69aec0145fdf596eddea6648188b0cf36a17e6410c16c98181ab6a8f418a9",
+  "limit": null
+}
