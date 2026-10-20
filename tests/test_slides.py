@@ -46,7 +46,7 @@ def test_numbers_trace_to_runs_csv(package, tmp_path):
     compare = pd.read_csv(out / "table_compare.csv")
     assert list(compare.columns) == ["Atributo", "ResNet-34", "MiT-B0"]
     assert "TODO: pendente" in (out / "HANDOFF.md").read_text()  # header e GIF da demo
-    assert "não\n  estão no GitHub" in (out / "HANDOFF.md").read_text()
+    assert "pasta 2AV-slides do Google Drive" in (out / "HANDOFF.md").read_text()
     assert "H0" in (out / "problem.md").read_text()
 
 

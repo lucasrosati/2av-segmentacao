@@ -1,13 +1,13 @@
 # Handoff para a equipe de slides
 
-- Gerado em 20/10/2026 19:47 pelo commit 5e9f437a2a838d105e4ae5c32820bbdfadadf68f.
+- Gerado em 20/10/2026 20:41 pelo commit 9b193b67253e0ba3440f4a611effa0c19a3cfe05.
 - Código que treinou as runs: a67a0b3.
 - Todos os números estão em `key_numbers.md`. Não recalcule nem arredonde diferente;
   dúvidas vão para o Lucas.
 - Figuras: PNG 1920×1080, fundo claro, cores fixas (azul = ResNet-34, vermelho = MiT-B0).
-- `samples.png`, `qualitative.png` e `demo.gif` mostram fotos do Kvasir-SEG e não
-  estão no GitHub: vão pela pasta compartilhada. Uso só acadêmico, citando
-  Jha et al. (MMM 2020).
+- O pacote completo está na pasta 2AV-slides do Google Drive, compartilhada com o grupo.
+  `samples.png`, `qualitative.png` e `demo.gif` mostram fotos do Kvasir-SEG e só estão
+  lá, não no GitHub. Uso só acadêmico, citando Jha et al. (MMM 2020).
 
 ## Estrutura sugerida (10 slides)
 
