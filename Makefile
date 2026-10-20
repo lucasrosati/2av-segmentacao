@@ -43,7 +43,7 @@ demo:           ## M8: app Gradio local (http://127.0.0.1:7860)
 demo-gif:       ## M8: results/slides/demo.gif a partir das runs medianas
 	$(PY) -m seg2av.demo
 paper:          ## M9
-	cd paper && pdflatex -interaction=nonstopmode -halt-on-error main.tex && pdflatex -interaction=nonstopmode -halt-on-error main.tex
+	cd paper && pdflatex -interaction=nonstopmode -halt-on-error main.tex && bibtex main && pdflatex -interaction=nonstopmode -halt-on-error main.tex && pdflatex -interaction=nonstopmode -halt-on-error main.tex
 kaggle-push:    ## envia o notebook (GPU habilitada em kaggle/kernel-metadata.json)
 	uv run kaggle kernels push -p $(KERNEL_DIR)
 kaggle-status:

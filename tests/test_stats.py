@@ -64,3 +64,4 @@ def test_main_writes_tables(tmp_path, monkeypatch):
     assert r"\begin{tabular}" in tex and "Dice" in tex
     macros = (out / "numbers.tex").read_text()
     assert r"\newcommand{\DiceDecision}" in macros and r"\newcommand{\NPairs}{30}" in macros
+    assert r"\newcommand{\DiceCIt}" in macros and r"\newcommand{\IoUDecision}" in macros
