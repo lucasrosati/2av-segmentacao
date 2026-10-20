@@ -89,6 +89,32 @@ def to_latex(df: pd.DataFrame) -> str:
     return "\n".join(lines)
 
 
+def to_macros(df: pd.DataFrame) -> str:
+    """Macros do Dice para o texto do paper (\\input em main.tex), sem número digitado à mão."""
+    r = df.set_index("metric").loc["test_dice"]
+
+    def f(x, k=4):
+        return f"{x:.{k}f}".replace(".", ",")
+
+    test = "teste \\textit{t} pareado" if r.primary_test == "t" else "teste de Wilcoxon pareado"
+    macros = {
+        "DiceBase": f"{f(r.mean_base)} $\\pm$ {f(r.sd_base)}",
+        "DiceAlt": f"{f(r.mean_alt)} $\\pm$ {f(r.sd_alt)}",
+        "DiceDiff": f(r.mean_diff),
+        "DiceCI": f"[{f(r.ci_low)}; {f(r.ci_high)}]",
+        "DiceDz": f(r.d_z, 2),
+        "DiceShapiroP": _p(r.shapiro_p),
+        "DiceTP": _p(r.t_p),
+        "DiceWP": _p(r.wilcoxon_p),
+        "DiceTest": test,
+        "DiceDecision": "rejeita-se H0" if r.reject_h0 else "não se rejeita H0",
+        "NPairs": str(int(r.n)),
+    }
+    lines = ["% gerado por make stats a partir de results/runs.csv; não editar"]
+    lines += [f"\\newcommand{{\\{k}}}{{{v}}}" for k, v in macros.items()]
+    return "\n".join(lines) + "\n"
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--runs", type=Path, default=Path("results/runs.csv"))
@@ -98,6 +124,7 @@ def main() -> None:
     args.out_dir.mkdir(parents=True, exist_ok=True)
     df.to_csv(args.out_dir / "stats.csv", index=False)
     (args.out_dir / "stats.tex").write_text(to_latex(df))
+    (args.out_dir / "numbers.tex").write_text(to_macros(df))
     print(df.T.to_string())
 
 

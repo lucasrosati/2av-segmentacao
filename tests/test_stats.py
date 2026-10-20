@@ -62,3 +62,5 @@ def test_main_writes_tables(tmp_path, monkeypatch):
     assert len(pd.read_csv(out / "stats.csv")) == 2
     tex = (out / "stats.tex").read_text()
     assert r"\begin{tabular}" in tex and "Dice" in tex
+    macros = (out / "numbers.tex").read_text()
+    assert r"\newcommand{\DiceDecision}" in macros and r"\newcommand{\NPairs}{30}" in macros

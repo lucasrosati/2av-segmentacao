@@ -1,5 +1,5 @@
 % Paper da 2AV (EL1, CESAR School). Template IEEE conference; IEEEtran.cls v1.8b do CTAN.
-% Números vêm de results/ (M6); enquanto o sweep não termina, ficam como TODO: pendente.
+% Números vêm de results/tables/numbers.tex (gerado por make stats); nada digitado à mão.
 \documentclass[conference]{IEEEtran}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
@@ -10,6 +10,7 @@
 
 \renewcommand{\IEEEkeywordsname}{Palavras-chave}
 \newcommand{\todo}[1]{\textcolor{red}{TODO: #1}}
+\input{../results/tables/numbers.tex}
 
 \begin{document}
 
@@ -29,9 +30,11 @@ ResNet-34 e o Transformer hierárquico MiT-B0. Os dois cenários são treinados 
 protocolo no Kvasir-SEG (1000 imagens, divisão fixa 800/100/100) em 30 execuções pareadas por
 semente (60 treinos), e o Dice no conjunto de teste é comparado pelo teste \textit{t} pareado
 bilateral e pelo teste de Wilcoxon pareado ($\alpha = 0{,}05$). O \textit{encoder} ResNet-34
-obteve Dice de \todo{pendente} e o MiT-B0, de \todo{pendente}; a diferença média foi de
-\todo{pendente} (IC 95\%: \todo{pendente}; $p = $ \todo{pendente}), \todo{pendente: decisão
-sobre H0}. Também são relatados o número de parâmetros e a latência de inferência de cada
+obteve Dice de \DiceBase{} e o MiT-B0, de \DiceAlt{} (média $\pm$ desvio-padrão); a diferença
+média pareada foi de \DiceDiff{} a favor do MiT-B0 (IC 95\% \textit{bootstrap}: \DiceCI{};
+$d_z = $ \DiceDz{}). Pelo \DiceTest{}, $p = $ \DiceTP{} (Wilcoxon: $p = $ \DiceWP{}); portanto,
+\DiceDecision{}: há uma tendência pequena a favor do Transformer, sem evidência suficiente de
+diferença. Também são relatados o número de parâmetros e a latência de inferência de cada
 cenário.
 \end{abstract}
 
