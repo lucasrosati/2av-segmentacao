@@ -41,7 +41,7 @@ slides-assets:  ## M7b: results/slides/ (PNG 1920x1080, tabelas, key_numbers.md,
 demo:           ## M8
 	$(PY) demo/app.py
 paper:          ## M9
-	cd paper && latexmk -pdf main.tex
+	cd paper && pdflatex -interaction=nonstopmode -halt-on-error main.tex && pdflatex -interaction=nonstopmode -halt-on-error main.tex
 kaggle-push:    ## envia o notebook (GPU habilitada em kaggle/kernel-metadata.json)
 	uv run kaggle kernels push -p $(KERNEL_DIR)
 kaggle-status:

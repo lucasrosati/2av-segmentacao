@@ -1,0 +1,43 @@
+% Paper da 2AV (EL1, CESAR School). Template IEEE conference; IEEEtran.cls v1.8b do CTAN.
+% Números vêm de results/ (M6); enquanto o sweep não termina, ficam como TODO: pendente.
+\documentclass[conference]{IEEEtran}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[brazilian]{babel}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{xcolor}
+
+\renewcommand{\IEEEkeywordsname}{Palavras-chave}
+\newcommand{\todo}[1]{\textcolor{red}{TODO: #1}}
+
+\begin{document}
+
+\title{CNN ou Transformer como \textit{encoder} da U-Net? Comparação pareada entre ResNet-34 e
+MiT-B0 na segmentação de pólipos no Kvasir-SEG}
+
+\author{\IEEEauthorblockN{Lucas Rosati}
+\IEEEauthorblockA{CESAR School\\
+Recife, PE, Brasil}}
+
+\maketitle
+
+\begin{abstract}
+A segmentação de pólipos em imagens de colonoscopia apoia a triagem do câncer colorretal.
+Este trabalho compara dois \textit{encoders} pré-treinados no ImageNet para uma U-Net: a CNN
+ResNet-34 e o Transformer hierárquico MiT-B0. Os dois cenários são treinados com o mesmo
+protocolo no Kvasir-SEG (1000 imagens, divisão fixa 800/100/100) em 30 execuções pareadas por
+semente (60 treinos), e o Dice no conjunto de teste é comparado pelo teste \textit{t} pareado
+bilateral e pelo teste de Wilcoxon pareado ($\alpha = 0{,}05$). O \textit{encoder} ResNet-34
+obteve Dice de \todo{pendente} e o MiT-B0, de \todo{pendente}; a diferença média foi de
+\todo{pendente} (IC 95\%: \todo{pendente}; $p = $ \todo{pendente}), \todo{pendente: decisão
+sobre H0}. Também são relatados o número de parâmetros e a latência de inferência de cada
+cenário.
+\end{abstract}
+
+\begin{IEEEkeywords}
+segmentação de pólipos, U-Net, \textit{transfer learning}, Transformers, Kvasir-SEG, teste
+\textit{t} pareado
+\end{IEEEkeywords}
+
+\end{document}
