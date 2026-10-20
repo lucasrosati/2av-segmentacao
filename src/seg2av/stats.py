@@ -13,11 +13,12 @@ from scipy import stats
 
 BASE, ALT = "cnn_resnet34", "transformer_mitb0"
 METRICS = ("test_dice", "test_iou")
+ALPHA = 0.05  # bilateral, decidido no plano
 LABELS = {"test_dice": "Dice", "test_iou": "IoU"}
 
 
 def paired_stats(
-    a, b, alpha: float = 0.05, n_boot: int = 10_000, seed: int = 0
+    a, b, alpha: float = ALPHA, n_boot: int = 10_000, seed: int = 0
 ) -> dict[str, float | int | str | bool]:
     a, b = np.asarray(a, float), np.asarray(b, float)
     d = b - a

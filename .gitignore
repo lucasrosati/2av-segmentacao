@@ -33,6 +33,8 @@ CLAUDE.local.md
 .claude/
 docs/plano-2av.md
 .DS_Store
-# imagens do Kvasir-SEG: regenerar com make samples / make figures
+# imagens do Kvasir-SEG: regenerar com make samples / make figures / make slides-assets
 results/figures/samples.png
 results/figures/qualitative.png
+results/slides/samples.png
+results/slides/qualitative.png

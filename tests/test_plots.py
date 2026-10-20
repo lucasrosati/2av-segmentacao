@@ -6,7 +6,7 @@ import pandas as pd
 import torch
 
 from seg2av.models import build_model
-from seg2av.plots import median_seed, paper_figures, pick_examples
+from seg2av.plots import median_seed, pick_examples, result_figures
 from seg2av.stats import ALT, BASE, compare
 
 SEEDS = range(5)
@@ -39,6 +39,10 @@ def _fake_results(tmp_path, rng):
                     "test_dice": 0.9 + (0.01 if s == ALT else 0) + rng.normal(0, 0.01),
                     "test_iou": 0.8 + rng.normal(0, 0.01),
                     "n_params": 24_000_000 if s == BASE else 5_500_000,
+                    "n_params_encoder": 21_000_000 if s == BASE else 3_300_000,
+                    "best_epoch": epochs - 3,
+                    "epochs_run": epochs,
+                    "train_time_s": 7.0 * epochs,
                     "latency_ms": 9.0 if s == BASE else 14.5,
                     "latency_device": "Tesla T4",
                 }
@@ -73,7 +77,7 @@ def test_paper_figures_from_synthetic_results(tmp_path):
     _fake_dataset(tmp_path / "data", rng)
     for s in (BASE, ALT):
         _fake_checkpoint(tmp_path / "runs" / f"{s}_seed{median_seed(runs, s)}", MODEL[s])
-    paper_figures(tmp_path, root=tmp_path / "data")
+    result_figures(tmp_path, root=tmp_path / "data")
     for name in ("dice_box", "paired_diff", "curves", "dice_latency", "qualitative"):
         assert (tmp_path / "figures" / f"{name}.png").stat().st_size > 10_000, name
 

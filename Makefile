@@ -37,7 +37,7 @@ figures:        ## M7
 	$(PY) -m seg2av.plots --target paper
 analyze: collect stats figures
 slides-assets:  ## M7b: results/slides/ (PNG 1920x1080, tabelas, key_numbers.md, HANDOFF.md)
-	$(PY) -m seg2av.plots --target slides
+	$(PY) -m seg2av.slides
 demo:           ## M8
 	$(PY) demo/app.py
 paper:          ## M9
