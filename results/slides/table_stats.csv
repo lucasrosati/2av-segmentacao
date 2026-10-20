@@ -1,0 +1,10 @@
+Estatística,Dice (primária),IoU
+Pares (seeds),30,30
+Diferença média (MiT-B0 − ResNet-34),"0,0047","0,0078"
+IC 95% da diferença (bootstrap),"[0,0002; 0,0093]","[0,0015; 0,0142]"
+Tamanho de efeito d_z,"0,36","0,43"
+Shapiro-Wilk nas diferenças (p),"0,225","0,159"
+t pareado (p),"0,058","0,027"
+Wilcoxon pareado (p),"0,064","0,040"
+Teste que decide,t pareado,t pareado
+"Decisão (α = 0,05)",não rejeita H0,rejeita H0

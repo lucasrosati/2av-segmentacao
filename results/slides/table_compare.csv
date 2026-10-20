@@ -1,0 +1,9 @@
+Atributo,ResNet-34,MiT-B0
+Arquitetura,U-Net,U-Net
+Encoder,ResNet-34,MiT-B0
+Pré-treino,ImageNet,ImageNet
+Parâmetros (total),"24,4 M","5,5 M"
+Parâmetros (encoder),"21,3 M","3,3 M"
+Dice no teste (média ± dp),"0,8957 ± 0,0100","0,9005 ± 0,0070"
+IC 95% da média (t),"[0,8920; 0,8995]","[0,8979; 0,9031]"
+"Latência (mediana, lote 1)","9,6 ms (Tesla T4)","16,1 ms (Tesla T4)"
