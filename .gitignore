@@ -27,7 +27,8 @@ paper/*.log
 paper/*.out
 paper/*.bbl
 paper/*.blg
-paper/main.pdf  # contém qualitative.png (imagens do Kvasir-SEG); regenerar com make paper
+# PDF contém qualitative.png (imagens do Kvasir-SEG); regenerar com make paper
+paper/main.pdf
 # instruções locais de agente (nunca vão para o GitHub)
 CLAUDE.md
 CLAUDE.local.md
