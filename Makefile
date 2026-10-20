@@ -5,7 +5,7 @@ CONFIG_cnn := configs/cnn_resnet34.yaml
 CONFIG_transformer := configs/transformer_mitb0.yaml
 KERNEL_DIR := kaggle
 
-.PHONY: setup env test lint data splits samples overfit baseline sweep pilot collect analyze stats figures slides-assets demo paper kaggle-push kaggle-status kaggle-output
+.PHONY: setup env test lint data splits samples overfit baseline sweep pilot collect analyze stats figures slides-assets demo demo-gif paper kaggle-push kaggle-status kaggle-output
 
 setup:          ## instala dependências
 	uv sync
@@ -38,8 +38,10 @@ figures:        ## M7
 analyze: collect stats figures
 slides-assets:  ## M7b: results/slides/ (PNG 1920x1080, tabelas, key_numbers.md, HANDOFF.md)
 	$(PY) -m seg2av.slides
-demo:           ## M8
-	$(PY) demo/app.py
+demo:           ## M8: app Gradio local (http://127.0.0.1:7860)
+	uv run --extra demo python demo/app.py
+demo-gif:       ## M8: results/slides/demo.gif a partir das runs medianas
+	$(PY) -m seg2av.demo
 paper:          ## M9
 	cd paper && pdflatex -interaction=nonstopmode -halt-on-error main.tex && pdflatex -interaction=nonstopmode -halt-on-error main.tex
 kaggle-push:    ## envia o notebook (GPU habilitada em kaggle/kernel-metadata.json)

@@ -1,6 +1,6 @@
 # Handoff para a equipe de slides
 
-- Gerado em 20/10/2026 18:49 pelo commit eacd5cc3dc4cfa5b9f2746e7cb83e829b085b109.
+- Gerado em 20/10/2026 18:56 pelo commit 3f8302a443b7f09dfcddb2653955a1a2f011934f.
 - Código que treinou as runs: a67a0b3.
 - Todos os números estão em `key_numbers.md`. Não recalcule nem arredonde diferente;
   dúvidas vão para o Lucas.
@@ -19,4 +19,4 @@
 | 7 | Estatística | paired_diff.png, table_stats.png |
 | 8 | Treino e custo | curves.png, dice_latency.png |
 | 9 | Exemplos qualitativos | qualitative.png |
-| 10 | Demo, conclusão e limitações | GIF da demo: TODO: pendente (M8); key_numbers.md |
+| 10 | Demo, conclusão e limitações | demo.gif (make demo-gif); key_numbers.md |

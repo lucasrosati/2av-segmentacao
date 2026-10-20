@@ -400,7 +400,7 @@ def handoff_md(missing: list[str], commits: list[str]) -> str:
         ("Estatística", "paired_diff.png, table_stats.png"),
         ("Treino e custo", "curves.png, dice_latency.png"),
         ("Exemplos qualitativos", "qualitative.png"),
-        ("Demo, conclusão e limitações", "GIF da demo: TODO: pendente (M8); key_numbers.md"),
+        ("Demo, conclusão e limitações", "demo.gif (make demo-gif); key_numbers.md"),
     ]
     lines = [
         "# Handoff para a equipe de slides",
