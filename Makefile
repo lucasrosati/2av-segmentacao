@@ -1,4 +1,4 @@
-# Alvos do projeto. Todos são stubs até a implementação (TODO).
+# Alvos do projeto (M0 a M9): dados, treino, análise, slides, demo e paper.
 PY ?= uv run python
 SCENARIO ?= cnn
 CONFIG_cnn := configs/cnn_resnet34.yaml

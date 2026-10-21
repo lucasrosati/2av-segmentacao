@@ -1,5 +1,6 @@
 # Cenário: U-Net + Transfer Learning (ImageNet) + encoder resnet34
-# TODO(M2): validar hiperparâmetros no piloto (M4). Mesmo orçamento nos dois cenários (exceto o encoder).
+# Config congelada após o piloto (M4), sem ajuste pelo teste; sweep oficial no commit a67a0b3.
+# Mesmo orçamento nos dois cenários (exceto o encoder).
 scenario: cnn_resnet34
 model:
   arch: Unet
@@ -13,11 +14,11 @@ data:
   image_size: 256
   augment: [hflip, vflip, rotate90, color_jitter_light]
 train:
-  epochs: 50            # TODO: definir no piloto
+  epochs: 50            # mantido após o piloto (M4); early stopping na val Dice
   batch_size: 16
   num_workers: 4        # Kaggle tem 4 vCPUs; entra na semente da augmentation, manter fixo
   optimizer: adamw
-  lr: 3.0e-4            # TODO: mesmo LR para ambos ou justificar diferença (registrar)
+  lr: 3.0e-4            # mesmo LR nos dois cenários (decidido no M4)
   weight_decay: 1.0e-4
   scheduler: cosine
   loss: dice_bce
