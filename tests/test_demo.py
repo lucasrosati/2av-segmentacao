@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 from PIL import Image
 from test_plots import MODEL, NAMES, _fake_checkpoint, _fake_dataset, _fake_results
 
@@ -30,3 +31,9 @@ def test_segment_and_gif_with_median_checkpoints(tmp_path):
     demo_gif(models, tmp_path / "data", NAMES[:2], gif)
     with Image.open(gif) as im:
         assert im.size == (1920, 1080) and im.n_frames == 2
+
+
+@pytest.mark.parametrize("image", [None, np.zeros((8, 8), np.uint8), np.zeros((8, 8, 4), np.uint8)])
+def test_segment_rejects_missing_or_non_rgb_image(image):
+    with pytest.raises(ValueError, match="imagem RGB"):
+        segment({}, image)

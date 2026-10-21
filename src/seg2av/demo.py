@@ -52,6 +52,8 @@ def overlay(image: np.ndarray, mask: np.ndarray, alpha: float = 0.45) -> np.ndar
 
 def segment(models: dict[str, dict], image: np.ndarray) -> dict[str, tuple[np.ndarray, float]]:
     """Por cenário: imagem com a máscara sobreposta e fração da imagem marcada como pólipo."""
+    if image is None or getattr(image, "ndim", 0) != 3 or image.shape[2] != 3:
+        raise ValueError("envie uma imagem RGB antes de segmentar")
     out = {}
     for s, entry in models.items():
         mask = predict(entry, image)

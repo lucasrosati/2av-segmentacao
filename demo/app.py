@@ -11,7 +11,10 @@ MODELS = load_models()
 
 
 def run(image):
-    out = segment(MODELS, image)
+    try:
+        out = segment(MODELS, image)
+    except ValueError as e:
+        raise gr.Error(f"Não foi possível segmentar: {e}.") from e
     return [out[s][0] for s in SCENARIOS] + [
         "\n".join(f"{LABEL[s]}: {100 * out[s][1]:.1f}% da imagem marcada" for s in SCENARIOS)
     ]
