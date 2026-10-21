@@ -33,13 +33,13 @@ A segmentação de pólipos em imagens de colonoscopia apoia a triagem do cânce
 Este trabalho compara dois \textit{encoders} pré-treinados no ImageNet para uma U-Net: a CNN
 ResNet-34 e o Transformer hierárquico MiT-B0. Os dois cenários são treinados com o mesmo
 protocolo no Kvasir-SEG (1000 imagens, divisão fixa \NTrain/\NVal/\NTest) em \NPairs{} execuções
-pareadas por semente (60 treinos), e o Dice no conjunto de teste é comparado pelo teste
+por cenário, pareadas por semente, e o Dice no conjunto de teste é comparado pelo teste
 \textit{t} pareado bilateral e pelo teste de Wilcoxon pareado ($\alpha = 0{,}05$). O
 \textit{encoder} ResNet-34 obteve Dice de \DiceBase{} e o MiT-B0, de \DiceAlt{} (média $\pm$
 desvio-padrão); a diferença média pareada foi de \DiceDiff{} a favor do MiT-B0 (IC 95\%
 \textit{bootstrap}: \DiceCI{}; $d_z = $ \DiceDz{}). Pelo \DiceTest{}, $p = $ \DiceTP{}
-(Wilcoxon: $p = $ \DiceWP{}); portanto, \DiceDecision{}: há uma tendência pequena a favor do
-Transformer, sem evidência suficiente de diferença. Também são relatados o número de parâmetros
+(Wilcoxon: $p = $ \DiceWP{}); portanto, \DiceDecision{}. A maior média observada para o MiT-B0
+não estabelece sua superioridade pelo teste pré-especificado. Também são relatados o número de parâmetros
 e a latência de inferência de cada cenário.
 \end{abstract}
 
@@ -51,8 +51,7 @@ segmentação de pólipos, U-Net, \textit{transfer learning}, Transformers, Kvas
 \section{Introdução}
 
 O câncer colorretal está entre os cânceres mais incidentes e mais letais no mundo
-\cite{sung2021globocan}, e a colonoscopia, com a remoção de pólipos, é a principal forma de
-prevenção. Segmentar o pólipo na imagem, isto é, marcar pixel a pixel a região da lesão, é uma
+\cite{sung2021globocan}. Segmentar o pólipo na imagem, isto é, marcar pixel a pixel a região da lesão, é uma
 tarefa de apoio ao exame que se beneficia de redes profundas, e o Kvasir-SEG
 \cite{jha2020kvasir} tornou-se um conjunto de referência para ela.
 
@@ -64,9 +63,9 @@ Tradicionalmente esse \textit{encoder} é uma CNN, como a ResNet \cite{he2016res
 anos, Transformers de visão \cite{dosovitskiy2021vit} com hierarquia de escalas, como o MiT da
 SegFormer \cite{xie2021segformer}, passaram a ocupar esse papel.
 
-Comparações entre arquiteturas costumam reportar uma única execução por modelo, embora o
-resultado varie com a semente de inicialização, a ordem dos dados e a \textit{augmentation}
-\cite{dietterich1998tests}. Este trabalho isola o efeito do \textit{encoder} numa U-Net com
+Comparações entre algoritmos precisam considerar a variabilidade de seus resultados
+\cite{dietterich1998tests}. Neste estudo, as execuções variam a semente de inicialização,
+a ordem dos dados e a \textit{augmentation}. Este trabalho compara a escolha do \textit{encoder} numa U-Net com
 \textit{transfer learning} e pergunta: \emph{trocar o \textit{encoder} CNN (ResNet-34) por um
 Transformer (MiT-B0) muda o Dice no teste do Kvasir-SEG?} As hipóteses são H0: o Dice médio de
 teste é igual nos dois cenários; e H1: é diferente (bilateral). As contribuições são: (i) um
@@ -82,15 +81,17 @@ No Kvasir-SEG, os próprios autores do conjunto apresentaram uma linha de base c
 reversa sobre um \textit{backbone} convolucional e virou referência para pólipos, avaliada também
 em conjuntos como o CVC-ClinicDB \cite{bernal2015cvc}.
 
-A atenção \cite{vaswani2017attention} chegou à visão com o ViT \cite{dosovitskiy2021vit}, que
+A arquitetura Transformer baseada em atenção \cite{vaswani2017attention} foi aplicada à
+classificação de imagens pelo ViT \cite{dosovitskiy2021vit}, que
 opera numa única escala. Para predição densa, a PVT \cite{wang2021pvt} e a SegFormer
 \cite{xie2021segformer} propuseram \textit{encoders} hierárquicos, com mapas em várias
 resoluções, compatíveis com \textit{decoders} do tipo U-Net. A TransUNet
 \cite{chen2021transunet} combinou CNN e Transformer no \textit{encoder} de uma U-Net, e a
 Polyp-PVT \cite{dong2023polyppvt} aplicou a PVT especificamente a pólipos. Esses trabalhos
-comparam arquiteturas completas, que diferem em vários componentes ao mesmo tempo, e em geral
-sem teste de hipótese sobre várias execuções. Aqui o \textit{decoder}, o treino e os dados ficam
-fixos e só o \textit{encoder} muda.
+comparam arquiteturas completas, que diferem em vários componentes ao mesmo tempo. Aqui se
+mantêm o protocolo de treino, os dados e a configuração padrão do \textit{decoder} U-Net,
+com as adaptações de canais exigidas por cada \textit{encoder}. Não se comparam diretamente
+os valores publicados, pois os protocolos e as divisões dos dados podem diferir.
 
 \section{Metodologia}
 
@@ -105,43 +106,80 @@ SHA-256 no início de cada execução. As imagens são redimensionadas para
 probabilidade 0,5 \cite{buslaev2020albumentations}.
 
 \subsection{Cenários}
-Os dois cenários combinam as mesmas técnicas: (A) U-Net \cite{ronneberger2015unet} e (B)
-\textit{transfer learning} do ImageNet, com \textit{fine-tuning} de toda a rede. Muda apenas (C)
-o \textit{encoder}: a CNN ResNet-34 \cite{he2016resnet} (\ParamsBase{}~M parâmetros no total,
-\ParamsEncBase{}~M no \textit{encoder}) ou o Transformer hierárquico MiT-B0
+O desenho A+B+C versus A+B+C' combina três componentes: (A) segmentação com U-Net
+\cite{ronneberger2015unet}, para reconstruir a máscara em várias escalas; (B)
+\textit{transfer learning} do ImageNet, para aproveitar características pré-treinadas,
+com \textit{fine-tuning} de toda a rede; e (C/C') extração de características por
+convoluções residuais ou atenção hierárquica. Esses componentes correspondem aos temas de
+segmentação, transferência de aprendizado e CNNs/Transformers da disciplina.
+O cenário A+B+C usa a ResNet-34 \cite{he2016resnet} (\ParamsBase{}~M parâmetros no total,
+\ParamsEncBase{}~M no \textit{encoder}); A+B+C' usa o Transformer hierárquico MiT-B0
 \cite{xie2021segformer} (\ParamsAlt{}~M no total, \ParamsEncAlt{}~M no \textit{encoder}). Ambos
 são instanciados pela biblioteca Segmentation Models PyTorch \cite{iakubovskii2019smp} sobre o
-PyTorch \cite{paszke2019pytorch}, com o mesmo \textit{decoder} U-Net e uma saída binária.
+PyTorch \cite{paszke2019pytorch}, com a mesma configuração padrão de \textit{decoder} U-Net
+e uma saída binária. A biblioteca adapta os canais de entrada e das conexões de atalho ao
+\textit{encoder}; os \textit{decoders} resultantes não são idênticos em dimensões nem em
+número de parâmetros. Emprega-se o MiT-B0 como \textit{encoder}, sem o \textit{decoder}
+original da SegFormer.
 
 \subsection{Treino}
 Os dois cenários usam o mesmo orçamento: até \MaxEpochs{} épocas, lote de \BatchSize{}, AdamW
 \cite{loshchilov2019adamw} com taxa de aprendizado \LR{} e \textit{weight decay} \WeightDecay{},
-decaimento cossenoidal da taxa \cite{loshchilov2017sgdr} e precisão mista. A função de perda é a
-soma da perda Dice \cite{milletari2016vnet} com a entropia cruzada binária. O treino para quando
+decaimento cossenoidal da taxa \cite{loshchilov2017sgdr}, sem reinícios, e precisão mista.
+A função de perda soma, com pesos iguais, a perda Dice binária da biblioteca
+\cite{iakubovskii2019smp}, motivada pelo uso do Dice como objetivo de segmentação
+\cite{milletari2016vnet}, e a entropia cruzada binária sobre \textit{logits}. O treino para quando
 o Dice de validação não melhora por \Patience{} épocas, e guarda-se o \textit{checkpoint} de
-melhor validação. Esses valores foram fixados antes do experimento; um piloto de 5 sementes
-serviu apenas para estimar variância e custo, e nenhuma decisão usou o conjunto de teste.
+melhor validação. Os hiperparâmetros foram mantidos do piloto ao experimento principal;
+as execuções do piloto foram excluídas da análise principal. A seleção do
+\textit{checkpoint} usa apenas o Dice de validação.
 
 \subsection{Execuções pareadas e avaliação}
-Cada cenário foi treinado com as sementes 0 a 29. A semente controla inicialização do
-\textit{decoder}, ordem dos lotes e \textit{augmentation}, e a semente $i$ de um cenário é
-pareada com a semente $i$ do outro. Todas as 60 execuções rodaram com o mesmo código, numa GPU
+Cada cenário foi treinado com as sementes de 0 a 29 (\NPairs{} por cenário). A semente controla
+a inicialização dos parâmetros não pré-treinados, a ordem dos lotes e a \textit{augmentation};
+a semente $i$ de um cenário é pareada com a semente $i$ do outro. O carregamento usa um
+gerador aleatório próprio e quatro processos de trabalho, com sementes também atribuídas
+às transformações. Todas as execuções rodaram com o mesmo código, numa GPU
 \LatDevice{} do Kaggle, somando \GPUHours{}~h de GPU. Cada execução avalia o conjunto de teste
 uma única vez, no \textit{checkpoint} de melhor validação, com limiar 0,5 na probabilidade. As
 métricas são o Dice (primária) e o IoU por imagem, com média sobre as \NTest{} imagens. A
-latência é a mediana de 50 inferências com lote 1 após 10 de aquecimento. Como referência
+latência de cada execução é a mediana de 50 passagens do modelo, com lote 1 e precisão mista,
+após 10 de aquecimento e com sincronização da GPU. Usa-se um tensor sintético já na GPU;
+não se incluem leitura da imagem, pré-processamento, transferência de entrada nem
+pós-processamento. O resumo por cenário é a mediana dessas medianas. Como referência
 trivial, prever a máscara toda vazia dá Dice \ZeroDice{} no teste.
 
 \subsection{Análise estatística}
-Para cada par de sementes calcula-se a diferença $d_i = \text{Dice}_{\text{MiT-B0}} -
+Cada execução produz um Dice médio de teste; a unidade da análise é o par de execuções,
+e não cada imagem. Para cada par de sementes calcula-se a diferença $d_i = \text{Dice}_{\text{MiT-B0}} -
 \text{Dice}_{\text{ResNet-34}}$. A normalidade das diferenças é verificada pelo teste de
 Shapiro-Wilk \cite{shapiro1965normality}; se ela não é rejeitada, a decisão sobre H0 é tomada
 pelo teste \textit{t} pareado bilateral, e caso contrário pelo teste de Wilcoxon pareado
 \cite{wilcoxon1945ranking}. Os dois testes são sempre reportados, com $\alpha = 0{,}05$. O
 intervalo de confiança de 95\% da diferença média vem de \textit{bootstrap} percentil com 10\,000
-reamostragens \cite{efron1979bootstrap}, e o tamanho de efeito é o $d_z$ de Cohen, a diferença
+reamostragens, com reposição, dos \NPairs{} pares, preservando a correspondência entre
+cenários \cite{efron1979bootstrap}; o tamanho de efeito é o $d_z$ de Cohen, a diferença
 média dividida pelo desvio-padrão das diferenças \cite{lakens2013effect}. Os cálculos usam o
 SciPy \cite{virtanen2020scipy}. Esse procedimento foi definido antes de o experimento rodar.
+O Dice é o único desfecho confirmatório; os testes do IoU são exploratórios, com
+\textit{p}-valores nominais, sem correção por comparações múltiplas.
+
+\subsection{Caso de uso e reprodução}
+A demonstração em Gradio recebe uma imagem e exibe, lado a lado, as máscaras dos dois
+cenários sobrepostas em vermelho, além da fração marcada. Para essa visualização,
+usa-se o \textit{checkpoint} de melhor validação da execução cujo Dice de teste é mais
+próximo da mediana de cada cenário. Essa seleção serve apenas à demonstração; a análise
+estatística usa todas as execuções. Trata-se de um caso de uso educacional, sem validação clínica.
+
+O repositório citado na Conclusão disponibiliza o manifesto
+\url{splits/split_v1.json}, seu hash, as configurações
+\url{configs/cnn_resnet34.yaml} e \url{configs/transformer_mitb0.yaml}, e as dependências
+fixadas. O código das execuções finais corresponde ao commit a67a0b3; os registros
+de configuração, versões, hardware e métricas ficam em \url{results/runs/}.
+Após preparar o ambiente e os dados conforme o README, executam-se
+\mbox{make sweep SCENARIO=cnn} e \mbox{make sweep SCENARIO=transformer};
+\mbox{make analyze} gera os resultados agregados e \mbox{make demo} inicia o caso de uso
+quando os \textit{checkpoints} estão disponíveis.
 
 \section{Resultados}
 
@@ -159,7 +197,8 @@ foi de \IoUDiff{} (IC 95\% \textit{bootstrap}: \IoUCI{}) com $p = $ \IoUTP{} pel
 \caption{Dice e IoU de teste por cenário (média $\pm$ desvio-padrão, \NPairs{} execuções) e
 comparação pareada (MiT-B0 $-$ ResNet-34). $\bar{d}$: diferença média com IC 95\%
 \textit{bootstrap}; $p_t$ e $p_W$: \textit{t} pareado e Wilcoxon pareado; entre parênteses, o
-teste que decide.}
+teste que decide em cada linha. A decisão confirmatória do estudo é a do Dice;
+IoU é exploratório, sem ajuste dos \textit{p}-valores.}
 \label{tab:stats}
 \input{../results/tables/stats.tex}
 \end{table*}
@@ -179,10 +218,12 @@ IC 95\% \textit{bootstrap} da diferença média.}
 \label{fig:diff}
 \end{figure}
 
-As curvas da Fig.~\ref{fig:curves} mostram perda de treino praticamente igual nos dois
-cenários e Dice de validação do MiT-B0 acima do da ResNet-34 em quase todas as épocas. A
-parada antecipada interrompeu \EarlyStopBase{} das execuções da ResNet-34 e \EarlyStopAlt{} das
-do MiT-B0 antes de \MaxEpochs{} épocas; em média, a ResNet-34 rodou \EpochsBase{} épocas (melhor
+As curvas da Fig.~\ref{fig:curves} mostram trajetórias visualmente próximas de perda de treino
+e média de Dice de validação do MiT-B0 acima da ResNet-34 em grande parte das épocas.
+São descrições das médias disponíveis: a composição dos grupos muda com a parada antecipada,
+e não foi realizado teste de diferença entre curvas. O critério de parada antecipada
+foi atingido em \EarlyStopBase{} das execuções da ResNet-34 e \EarlyStopAlt{} das do MiT-B0,
+inclusive quando coincidiu com o limite de \MaxEpochs{} épocas; em média, a ResNet-34 rodou \EpochsBase{} épocas (melhor
 validação na época \BestEpochBase) e o MiT-B0, \EpochsAlt{} (melhor na \BestEpochAlt).
 
 \begin{figure*}[t]
@@ -201,46 +242,52 @@ média. A Fig.~\ref{fig:qual} mostra exemplos das imagens mais fáceis e mais di
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.9\columnwidth]{dice_latency.png}
-\caption{Dice de teste contra latência de inferência (lote 1, \LatDevice), uma marca por
-execução.}
+\caption{Dice de teste contra latência de inferência (lote 1, precisão mista, \LatDevice).
+Cada marca resume um cenário: média do Dice com barras de desvio-padrão entre execuções
+e mediana das latências de cada execução. As barras não são intervalos de confiança.}
 \label{fig:lat}
 \end{figure}
 
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
 \IfFileExists{../results/figures/qualitative.png}{%
-\includegraphics[width=\columnwidth]{qualitative.png}}{%
+\includegraphics[width=0.75\textwidth]{qualitative.png}}{%
 \fbox{\parbox{0.9\columnwidth}{\centering\todo{rodar make figures com os dados}}}}
-\caption{Duas imagens de maior e duas de menor Dice médio entre as 60 execuções, com a predição
-da execução de Dice mediano de cada cenário.}
+\caption{Duas imagens de maior e duas de menor Dice médio considerando as \NPairs{}
+execuções de cada cenário. As predições são da execução mais próxima do Dice mediano de
+teste de cada cenário, com seu \textit{checkpoint} de melhor validação. São exemplos
+selecionados pelos extremos, não uma amostra representativa do teste.}
 \label{fig:qual}
-\end{figure}
+\end{figure*}
 
 \section{Discussão}
 
-O resultado é limítrofe. A diferença favorece o MiT-B0 de forma consistente, com mais pares a
-favor, menor dispersão e curvas de validação acima, mas é pequena (cerca de meio ponto de Dice)
-e não alcança significância pelo teste pré-especificado. A conclusão correta é não rejeitar H0,
-o que não equivale a afirmar que os \textit{encoders} são equivalentes: com \NPairs{} pares, um
-efeito dessa ordem fica no limite do que o experimento detecta.
+A diferença média observada de \DiceDiff{} e os \NFavorAlt{} pares favoráveis descrevem
+os resultados do MiT-B0 nesta amostra, mas não estabelecem sua superioridade. Pelo teste
+pré-especificado, \DiceDecision{}. Isso também não demonstra equivalência: não se definiu
+uma margem de equivalência nem um efeito mínimo de interesse para a aplicação.
 
 \textbf{Divergência entre o intervalo \textit{bootstrap} e o teste \textit{t}.} O IC 95\%
 \textit{bootstrap} do Dice, \DiceCI{}, não contém o zero, enquanto o teste \textit{t} pareado não
 rejeita H0 ($p = $ \DiceTP{}). As duas coisas não se contradizem: o teste \textit{t} corresponde
 ao intervalo \textit{t} da mesma diferença, \DiceCIt{}, que contém o zero. O \textit{bootstrap}
-percentil usa o desvio amostral sem a correção de Student e quantis empíricos, e com $n = $
-\NPairs{} tende a dar um intervalo um pouco mais estreito \cite{efron1979bootstrap}. Como o
-\textit{p}-valor está perto de 0,05, essa diferença de largura basta para mudar o lado do zero.
+percentil toma os percentis das médias das diferenças reamostradas
+\cite{efron1979bootstrap}; o intervalo \textit{t} usa a média observada, seu erro-padrão e
+quantis da distribuição \textit{t}. São construções distintas, que podem divergir em
+amostras finitas. Aqui o intervalo \textit{bootstrap} ficou mais estreito, mas isso não é
+uma propriedade garantida do método. Não há dualidade obrigatória entre esse intervalo
+e a decisão do teste \textit{t}.
 Seguimos o procedimento definido antes dos dados: a decisão é do teste \textit{t}, e o intervalo
-\textit{bootstrap} é reportado sem trocar de método depois de ver o resultado. O IoU, com efeito
-um pouco maior, rejeita H0, mas é métrica secundária e não substitui a decisão pelo Dice.
+\textit{bootstrap} é reportado sem trocar de método depois de ver o resultado. O resultado
+nominal do IoU é exploratório e não modifica a decisão sobre a hipótese primária do Dice.
 
 Sobre o custo, ter menos parâmetros não tornou o MiT-B0 mais rápido: a latência dele foi maior
-na T4 com lote 1. Uma explicação plausível, não testada aqui, é que as operações de atenção e de
-reorganização de tensores aproveitam menos a GPU do que convoluções em entradas pequenas. Nos
-exemplos qualitativos, as duas redes acertam bem os pólipos grandes e bem delimitados; as
-maiores falhas aparecem em imagens com pólipo pequeno ou com mais de uma região candidata, onde
-a execução mediana do MiT-B0 marcou áreas extras.
+na \LatDevice{} com lote 1. Os tempos medidos não identificam a causa: atribuí-la à atenção,
+à reorganização de tensores ou ao uso da GPU exigiria perfilamento das operações.
+Na Fig.~\ref{fig:qual}, ambas as redes se aproximam das máscaras de referência nos exemplos
+de maior Dice. Nos exemplos de menor Dice, há regiões previstas além da máscara de
+referência, mais extensas no MiT-B0. Esses casos ilustram erros, mas não permitem estimar
+sua frequência nem associá-los sistematicamente ao tamanho do pólipo ou a regiões candidatas.
 
 \section{Limitações}
 
@@ -251,15 +298,25 @@ mesmos nos dois cenários e não foram otimizados separadamente para cada \texti
 pode favorecer um deles. A resolução de \ImageSize{} pixels é menor que a original. A latência
 foi medida num único tipo de GPU, e a determinização do treino na GPU não é completa. Por fim,
 o MiT-B0 é a menor variante da família, e variantes maiores podem se comportar de outra forma.
+A comparação inclui as adaptações do \textit{decoder} decorrentes da troca do
+\textit{encoder}; não isola o mecanismo de atenção em relação à convolução.
+Não foi apresentado dimensionamento amostral por poder ou por efeito mínimo detectável.
+Por isso, a ausência de rejeição não informa quais diferenças relevantes poderiam ser
+descartadas. Além disso, Shapiro-Wilk não rejeitar a normalidade não a comprova. A
+interpretação do Wilcoxon como teste de localização pressupõe simetria da distribuição
+das diferenças; a rejeição da normalidade, por si só, não verifica esse pressuposto. Ele
+não é um substituto geral para um teste de igualdade de médias.
 
 \section{Conclusão}
 
 Numa U-Net com \textit{transfer learning} no Kvasir-SEG, trocar o \textit{encoder} ResNet-34 pelo
 MiT-B0 elevou o Dice médio de teste em \DiceDiff{}, mas, com \NPairs{} execuções pareadas,
 \DiceDecision{} ($p = $ \DiceTP{}). O MiT-B0 usa \ParamsRatio{} vezes menos parâmetros e foi
-\LatRatio{} vezes mais lento por imagem. Neste cenário, a escolha entre os dois depende mais do
-custo de inferência do que de uma diferença de qualidade que o experimento não confirmou. Trabalhos futuros incluem validação
-cruzada, outros conjuntos de pólipos e variantes maiores dos dois \textit{encoders}. Código,
+\LatRatio{} vezes mais lento por imagem no protocolo medido. A ResNet-34 apresentou menor
+latência e o MiT-B0, menos parâmetros; a prioridade entre esses custos depende da aplicação.
+O estudo não demonstra superioridade nem equivalência em Dice. Trabalhos futuros incluem
+planejamento amostral para um efeito mínimo de interesse, validação cruzada, outros conjuntos
+de pólipos, perfilamento computacional e variantes maiores dos dois \textit{encoders}. Código,
 configurações e resultados de cada execução estão em
 \url{https://github.com/lucasrosati/2av-segmentacao}.
 

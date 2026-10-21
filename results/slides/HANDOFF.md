@@ -1,6 +1,6 @@
 # Handoff para a equipe de slides
 
-- Gerado em 20/10/2026 21:00 pelo commit 9cefe376697b1ddeecd932160219ae84f5959f82.
+- Gerado em 20/10/2026 21:33 pelo commit 6ffc20c67bf10e7aff038f1580a2f9f0efaf8191.
 - Código que treinou as runs: a67a0b3.
 - Todos os números estão em `key_numbers.md`. Não recalcule nem arredonde diferente;
   dúvidas vão para o Lucas.
