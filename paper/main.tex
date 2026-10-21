@@ -55,7 +55,7 @@ O câncer colorretal está entre os cânceres mais incidentes e mais letais no m
 tarefa de apoio ao exame que se beneficia de redes profundas, e o Kvasir-SEG
 \cite{jha2020kvasir} tornou-se um conjunto de referência para ela.
 
-A U-Net \cite{ronneberger2015unet} continua sendo a arquitetura base da segmentação médica: um
+A U-Net \cite{ronneberger2015unet} é uma arquitetura amplamente usada na segmentação médica: um
 \textit{encoder} extrai características em várias escalas e um \textit{decoder} as recombina por
 conexões de atalho. Quando há poucas imagens rotuladas, é comum usar como \textit{encoder} uma
 rede pré-treinada no ImageNet \cite{deng2009imagenet} (\textit{transfer learning}).
@@ -102,7 +102,7 @@ foram binarizadas no meio da escala. A divisão é única e fixa, com \NTrain{} 
 \NVal{} de validação e \NTest{} de teste, sorteada uma vez (semente 0) e verificada por hash
 SHA-256 no início de cada execução. As imagens são redimensionadas para
 \ImageSize$\times$\ImageSize{} e normalizadas com média e desvio do ImageNet. No treino aplicam-se
-\textit{flip} horizontal e vertical, rotação de 90° e variação leve de cor, cada uma com
+\textit{flip} horizontal e vertical, rotações em múltiplos de 90° e variação leve de cor, cada uma com
 probabilidade 0,5 \cite{buslaev2020albumentations}.
 
 \subsection{Cenários}
@@ -125,10 +125,11 @@ original da SegFormer.
 \subsection{Treino}
 Os dois cenários usam o mesmo orçamento: até \MaxEpochs{} épocas, lote de \BatchSize{}, AdamW
 \cite{loshchilov2019adamw} com taxa de aprendizado \LR{} e \textit{weight decay} \WeightDecay{},
-decaimento cossenoidal da taxa \cite{loshchilov2017sgdr}, sem reinícios, e precisão mista.
+decaimento cossenoidal da taxa \cite{loshchilov2017sgdr}, sem reinícios, e precisão mista
+(AMP, \textit{automatic mixed precision}).
 A função de perda soma, com pesos iguais, a perda Dice binária da biblioteca
 \cite{iakubovskii2019smp}, motivada pelo uso do Dice como objetivo de segmentação
-\cite{milletari2016vnet}, e a entropia cruzada binária sobre \textit{logits}. O treino para quando
+\cite{milletari2016vnet}, e a entropia cruzada binária (BCE) sobre \textit{logits}. O treino para quando
 o Dice de validação não melhora por \Patience{} épocas, e guarda-se o \textit{checkpoint} de
 melhor validação. Os hiperparâmetros foram mantidos do piloto ao experimento principal;
 as execuções do piloto foram excluídas da análise principal. A seleção do
@@ -142,7 +143,7 @@ gerador aleatório próprio e quatro processos de trabalho, com sementes também
 às transformações. Todas as execuções rodaram com o mesmo código, numa GPU
 \LatDevice{} do Kaggle, somando \GPUHours{}~h de GPU. Cada execução avalia o conjunto de teste
 uma única vez, no \textit{checkpoint} de melhor validação, com limiar 0,5 na probabilidade. As
-métricas são o Dice (primária) e o IoU por imagem, com média sobre as \NTest{} imagens. A
+métricas são o Dice (primária) e o IoU (\textit{intersection over union}) por imagem, com média sobre as \NTest{} imagens. A
 latência de cada execução é a mediana de 50 passagens do modelo, com lote 1 e precisão mista,
 após 10 de aquecimento e com sincronização da GPU. Usa-se um tensor sintético já na GPU;
 não se incluem leitura da imagem, pré-processamento, transferência de entrada nem
@@ -184,7 +185,7 @@ quando os \textit{checkpoints} estão disponíveis.
 \section{Resultados}
 
 A Tabela~\ref{tab:stats} resume o teste. O MiT-B0 teve Dice médio maior e desvio menor que a
-ResNet-34, e venceu em \NFavorAlt{} dos \NPairs{} pares (Figs.~\ref{fig:box}
+ResNet-34, e obteve Dice maior em \NFavorAlt{} dos \NPairs{} pares (Figs.~\ref{fig:box}
 e~\ref{fig:diff}). As diferenças não rejeitam a normalidade (Shapiro-Wilk: $p = $
 \DiceShapiroP{}), então a decisão é pelo \DiceTest: $p = $ \DiceTP{}, e \DiceDecision{} ao nível
 de 5\%. O Wilcoxon leva à mesma conclusão ($p = $ \DiceWP{}). O efeito é pequeno: diferença
@@ -234,8 +235,8 @@ execuções que chegaram a cada época).}
 \label{fig:curves}
 \end{figure*}
 
-Quanto ao custo (Fig.~\ref{fig:lat}), o MiT-B0 tem \ParamsRatio{} vezes menos parâmetros, mas
-sua latência mediana foi \LatRatio{} vezes a da ResNet-34 (\LatAlt{} contra \LatBase{}~ms por
+Quanto ao custo (Fig.~\ref{fig:lat}), a ResNet-34 tem \ParamsRatio{} vezes os parâmetros do MiT-B0, mas
+a latência mediana do MiT-B0 foi \LatRatio{} vezes a da ResNet-34 (\LatAlt{} contra \LatBase{}~ms por
 imagem). O tempo de treino por execução foi parecido: \TrainMinBase{} e \TrainMinAlt{}~min em
 média. A Fig.~\ref{fig:qual} mostra exemplos das imagens mais fáceis e mais difíceis.
 
@@ -311,9 +312,9 @@ não é um substituto geral para um teste de igualdade de médias.
 
 Numa U-Net com \textit{transfer learning} no Kvasir-SEG, trocar o \textit{encoder} ResNet-34 pelo
 MiT-B0 elevou o Dice médio de teste em \DiceDiff{}, mas, com \NPairs{} execuções pareadas,
-\DiceDecision{} ($p = $ \DiceTP{}). O MiT-B0 usa \ParamsRatio{} vezes menos parâmetros e foi
-\LatRatio{} vezes mais lento por imagem no protocolo medido. A ResNet-34 apresentou menor
-latência e o MiT-B0, menos parâmetros; a prioridade entre esses custos depende da aplicação.
+\DiceDecision{} ($p = $ \DiceTP{}). A ResNet-34 tem \ParamsRatio{} vezes os parâmetros do
+MiT-B0, mas o MiT-B0 levou \LatRatio{} vezes o tempo por imagem no protocolo medido; a
+prioridade entre esses custos depende da aplicação.
 O estudo não demonstra superioridade nem equivalência em Dice. Trabalhos futuros incluem
 planejamento amostral para um efeito mínimo de interesse, validação cruzada, outros conjuntos
 de pólipos, perfilamento computacional e variantes maiores dos dois \textit{encoders}. Código,
